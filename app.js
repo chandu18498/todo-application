@@ -17,8 +17,8 @@ const initializeDBAndServer = async () => {
       filename: dbPath,
       driver: sqlite3.Database,
     });
-    app.listen(3000, () => {
-      console.log("Server Running at http://localhost:3000/");
+    app.listen(4000, () => {
+      console.log("Server Running at http://localhost:4000/");
     });
   } catch (e) {
     console.log(`DB Error: ${e.message}`);
@@ -27,38 +27,43 @@ const initializeDBAndServer = async () => {
 };
 
 initializeDBAndServer();
+
 //API 1
-//Scenario 1, 2, 3, 4
 app.get("/todos/", async (request, response) => {
   const { status, priority, search_q } = request.query;
-  let getTodoQuery = null;
-  let queryResponse = null;
-  switch (true) {
-    case status !== undefined:
-      getTodoQuery = `
-        SELECT * FROM todo
-        WHERE status = '${status}';`;
-      queryResponse = await db.all(getTodoQuery);
-      response.send(queryResponse);
-      break;
-    case priority !== undefined:
-      getTodoQuery = `
-        SELECT * FROM todo
-        WHERE priority = '${priority}';`;
-      queryResponse = await db.all(getTodoQuery);
-      response.send(queryResponse);
-      break;
-    case search_q !== undefined:
-      getTodoQuery = `
-        SELECT * FROM todo
-        WHERE todo LIKE '%${search_q}%'`;
-      queryResponse = await db.all(getTodoQuery);
-      response.send(queryResponse);
-      break;
-    default:
-      getTodoQuery = `SELECT * FROM todo`;
-      queryResponse = await db.all(getTodoQuery);
-      response.send(queryResponse);
+  if ((status !== undefined) & (priority !== undefined)) {
+    const todoSearchQuery = `
+    SELECT * FROM todo
+    WHERE 
+    status = '${status}' AND priority = '${priority}';`;
+    const todoResponse = await db.all(todoSearchQuery);
+    response.send(todoResponse);
+  } else if (status !== undefined) {
+    const todoSearchQuery = `
+    SELECT * FROM todo
+    WHERE 
+    status = '${status}';`;
+    const todoResponse = await db.all(todoSearchQuery);
+    response.send(todoResponse);
+  } else if (priority !== undefined) {
+    const todoSearchQuery = `
+    SELECT * FROM todo
+    WHERE 
+    priority = '${priority}';`;
+    const todoResponse = await db.all(todoSearchQuery);
+    response.send(todoResponse);
+  } else if (search_q !== undefined) {
+    const todoSearchQuery = `
+    SELECT * FROM todo
+    WHERE 
+    todo LIKE '%${search_q}%';`;
+    const todoResponse = await db.all(todoSearchQuery);
+    response.send(todoResponse);
+  } else {
+    const todoSearchQuery = `
+    SELECT * FROM todo`;
+    const todoResponse = await db.all(todoSearchQuery);
+    response.send(todoResponse);
   }
 });
 
@@ -67,64 +72,54 @@ app.get("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
   const getTodoQuery = `
     SELECT * FROM todo
-    WHERE id = ${todoId};`;
-  const queryResponse = await db.get(getTodoQuery);
-  response.send(queryResponse);
+    WHERE
+    id = ${todoId};`;
+  const todoResponse = await db.get(getTodoQuery);
+  response.send(todoResponse);
 });
 
 //API 3
 app.post("/todos/", async (request, response) => {
   const { id, todo, priority, status } = request.body;
-  console.log(id);
-  console.log(todo);
-  console.log(priority);
-  console.log(status);
-  const postTodoQuery = `
+  const createTodoQuery = `
     INSERT INTO todo (id, todo, priority, status)
     VALUES 
-    (${id}, '${todo}', '${priority}', '${status}');`;
-  const postQuery = await db.run(postTodoQuery);
+    (${id},"${todo}", "${priority}", "${status}");`;
+  const newTodo = await db.run(createTodoQuery);
   response.send("Todo Successfully Added");
 });
 
 //API 4
 app.put("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
-  const elements = request.body;
-  const { status, priority, todo } = elements;
-  let putQuery = null;
-  switch (true) {
-    case status !== undefined:
-      putQuery = `
-          UPDATE todo
-          SET 
-          status = '${status}'
-          WHERE 
-          id = ${todoId};`;
-      await db.run(putQuery);
-      response.send("Status Updated");
-      break;
-    case priority !== undefined:
-      putQuery = `
-          UPDATE todo
-          SET 
-          status = '${priority}'
-          WHERE 
-          id = ${todoId};`;
-      await db.run(putQuery);
-      response.send("Priority Updated");
-      break;
-    case todo !== undefined:
-      putQuery = `
-          UPDATE todo
-          SET 
-          status = '${priority}'
-          WHERE 
-          id = ${todoId};`;
-      await db.run(todo);
-      response.send("Todo Updated");
-    default:
-      response.send("");
+  const { status, priority, todo } = request.body;
+  if (status !== undefined) {
+    const updateTodoQuery = `
+        UPDATE todo
+        SET 
+        status = '${status}'
+        WHERE 
+        id = ${todoId};`;
+    const updateTodo = await db.run(updateTodoQuery);
+    response.send("Status Updated");
+  } else if (priority !== undefined) {
+    const updateTodoQuery = `
+        UPDATE todo
+        SET 
+        priority = '${priority}'
+        WHERE 
+        id = ${todoId};`;
+    const updateTodo = await db.run(updateTodoQuery);
+    response.send("Priority Updated");
+  } else if (todo !== undefined) {
+    const updateTodoQuery = `
+        UPDATE todo
+        SET 
+        todo = '${todo}'
+        WHERE 
+        id = ${todoId};`;
+    const updateTodo = await db.run(updateTodoQuery);
+    response.send("Todo Updated");
   }
 });
 
