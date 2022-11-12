@@ -3,26 +3,26 @@ GET http://localhost:3000/todos/
 ###
 //API 1
 //Scenario 1
-GET http://localhost:3000/todos/?status=TO%20DO
+GET http://localhost:4000/todos/?status=TO%20DO
 
 ###
 //Scenario 2
-GET http://localhost:3000/todos/?priority=HIGH
+GET http://localhost:4000/todos/?priority=HIGH
 
 ###
 //Scenario 3
-GET http://localhost:3000/todos/?status=IN%20PROGRESS
+GET http://localhost:4000/todos/?priority=HIGH&status=IN%20PROGRESS
 
 ###
 //Scenario 4
-GET http://localhost:3000/todos/?search_q=Play
+GET http://localhost:4000/todos/?search_q=Play
 
 ###
 //API 2
-GET http://localhost:3000/todos/2/
+GET http://localhost:4000/todos/2/
 ###
 //API 3
-POST http://localhost:3000/todos/
+POST http://localhost:4000/todos/
 Content-Type: application/json
 {
     "id": 10,
@@ -33,7 +33,7 @@ Content-Type: application/json
 //API 4
 ###
 //Scenario 1
-PUT http://localhost:3000/todos/1/
+PUT http://localhost:4000/todos/1/
 Content-Type: application/json
 {
     "status": "DONE"
@@ -41,7 +41,7 @@ Content-Type: application/json
 
 ###
 //Scenario 2
-PUT http://localhost:3000/todos/1/
+PUT http://localhost:4000/todos/1/
 Content-Type: application/json
 {
     "priority": "HIGH"
@@ -49,7 +49,7 @@ Content-Type: application/json
 
 ###
 //Scenario 3
-PUT http://localhost:3000/todos/1/
+PUT http://localhost:4000/todos/1/
 Content-Type: application/json
 {
     "todo": "Some task"
@@ -57,5 +57,4 @@ Content-Type: application/json
 
 ###
 //API 5
-DELETE http://localhost:3000/todos/4/
-Content-Type: application/json
+DELETE http://localhost:4000/todos/4/
